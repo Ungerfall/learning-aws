@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SimpleOnlineShop.Database;
+using System.Data.SQLite;
+using System.IO;
 
 namespace SimpleOnlineShop
 {
@@ -37,6 +34,14 @@ namespace SimpleOnlineShop
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.Use(req =>
+            {
+                using var connection = new SQLiteConnection(ConnectionString.Value);
+                connection.Execute(File.ReadAllText(Path.Combine("Database", "database.sql")));
+
+                return req;
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
