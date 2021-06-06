@@ -5,6 +5,6 @@ namespace SimpleOnlineShop.Database
     public class ConnectionString
     {
         public static readonly string Value
-            = "Data Source=" + Path.Combine(Directory.GetCurrentDirectory(), "database", "simple-online-shop.sqlite");
+            = "Data Source=" + Path.Combine("Database", "simple-online-shop.sqlite");
     }
 }
