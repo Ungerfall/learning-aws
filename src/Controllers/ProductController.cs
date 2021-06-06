@@ -20,13 +20,19 @@ namespace SimpleOnlineShop.Controllers
         }
 
         [HttpGet("{id}")]
-        public Product Get(int id)
+        public ActionResult<Product> Get(int id)
         {
             using var con = new SQLiteConnection(ConnectionString.Value);
 
-            return con.Query<Product>(
+            var products = con.Query<Product>(
                     "SELECT ProductId, ProductName, UnitPrice, Quantity FROM Products WHERE ProductId = @Id;", new { Id = id })
-                .First();
+                .ToArray();
+
+            if (!products.Any()) {
+                return NotFound();
+            }
+
+            return products.First();
         }
 
         [HttpPost]
