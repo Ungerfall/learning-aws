@@ -5,7 +5,35 @@ Resources:
   vpc:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/26
+      CidrBlock: "10.0.0.0/26"
       EnableDnsSupport: true
 
+  privateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "us-east-1a"
+      VpcId: !Ref vpc
+      CidrBlock: "10.0.0.0/28"
+      MapPublicIpOnLaunch: false
+
+  publicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "us-east-1a"
+      VpcId: !Ref vpc
+      CidrBlock: "10.0.0.16/28"
+      MapPublicIpOnLaunch: true
+  
+
 Outputs:
+  VPC:
+    Description: A reference to the created VPC
+    Value: !Ref vpc
+
+  PublicSubnet:
+    Description: Public subnet
+    Value: !Ref publicSubnet
+
+  PrivateSubnet:
+    Description: Private subnet
+    Value: !Ref privateSubnet
