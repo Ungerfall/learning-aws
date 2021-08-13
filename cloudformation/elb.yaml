@@ -23,6 +23,28 @@ Resources:
       VpcId: !Ref vpc
       CidrBlock: "10.0.0.16/28"
       MapPublicIpOnLaunch: true
+
+  internetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  attachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref vpc
+      InternetGatewayId: !Ref internetGateway
+    
+  natElasticIp:
+    Type: AWS::EC2::EIP
+    DependsOn: attachGateway
+    Properties:
+      Domain: vpc
+
+  natGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt natElasticIp.AllocationId
+      SubnetId: !Ref publicSubnet
+
   
 
 Outputs:
