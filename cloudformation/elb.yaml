@@ -1,5 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "elastic load balancer with two EC2 instances, public and private VPC"
+Description: >
+  "elastic load balancer with two EC2 instances, public and private VPC."
 
 Resources: 
   vpc:
@@ -45,7 +46,40 @@ Resources:
       AllocationId: !GetAtt natElasticIp.AllocationId
       SubnetId: !Ref publicSubnet
 
-  
+  sshSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "sg-ssh"
+      GroupDescription: "Enables SSH access via port 22"
+      VpcId: !Ref vpc
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+
+  httpSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "sg-http"
+      GroupDescription: "Enables HTTP access via port 80"
+      VpcId: !Ref vpc
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+
+  ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: "ec2key"
+      ImageId: "ami-091aa67fccd794d5f"
+      InstanceType: "t2.micro"
+      SecurityGroupIds: [
+        !Ref sshSecurityGroup,
+        !Ref httpSecurityGroup
+      ]
 
 Outputs:
   VPC:
