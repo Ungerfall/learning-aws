@@ -1,3 +1,5 @@
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Core.Sampling.Local;
 using Dapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +26,10 @@ namespace SimpleOnlineShop
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            var recorder = new AWSXRayRecorderBuilder()
+                .WithSamplingStrategy(new LocalizedSamplingStrategy("sampling-rules.json"))
+                .Build();
+            AWSXRayRecorder.InitializeInstance(Configuration, recorder);
             services.AddControllers();
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SimpleOnlineShop", Version = "v1" });
@@ -41,6 +46,8 @@ namespace SimpleOnlineShop
 
                 return req;
             });
+
+            app.UseXRay("SimpleOnlineShop", Configuration);
 
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
