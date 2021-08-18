@@ -1,0 +1,25 @@
+{
+    "version": 2,
+    "rules": [
+        {
+            "description": "Get a product",
+            "host": "*",
+            "http_method": "GET",
+            "url_path": "/product/*",
+            "fixed_target": 0,
+            "rate": 0.05
+        },
+        {
+            "description": "Create a product",
+            "host": "*",
+            "http_method": "POST",
+            "url_path": "/product/*",
+            "fixed_target": 0,
+            "rate": 0.05
+        }
+    ],
+    "default": {
+        "fixed_target": 1,
+        "rate": 0.1
+    }
+}
