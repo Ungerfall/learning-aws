@@ -26,10 +26,6 @@ namespace SimpleOnlineShop
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var recorder = new AWSXRayRecorderBuilder()
-                .WithSamplingStrategy(new LocalizedSamplingStrategy("sampling-rules.json"))
-                .Build();
-            AWSXRayRecorder.InitializeInstance(Configuration, recorder);
             services.AddControllers();
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SimpleOnlineShop", Version = "v1" });
@@ -53,7 +49,7 @@ namespace SimpleOnlineShop
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SimpleOnlineShop v1"));
             }
 
-            app.UseXRay("SimpleOnlineShop", Configuration);
+            app.UseXRay("SimpleOnlineShop");
 
             app.UseHttpsRedirection();
 
