@@ -47,13 +47,13 @@ namespace SimpleOnlineShop
                 return req;
             });
 
-            app.UseXRay("SimpleOnlineShop", Configuration);
-
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SimpleOnlineShop v1"));
             }
+
+            app.UseXRay("SimpleOnlineShop", Configuration);
 
             app.UseHttpsRedirection();
 
