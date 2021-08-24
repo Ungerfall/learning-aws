@@ -44,3 +44,9 @@ docker create -p 80:80 --name sos ungerfall/simpleonlineshop
 docker start sos
 ```
 
+### Get ports listening 2000
+
+``` bash
+sudo netstat -pna | grep 2000
+```
+
