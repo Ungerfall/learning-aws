@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Sampling.Local;
 using Dapper;
@@ -27,6 +28,7 @@ namespace SimpleOnlineShop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<IAmazonDynamoDB, AmazonDynamoDBClient>();
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SimpleOnlineShop", Version = "v1" });
             });

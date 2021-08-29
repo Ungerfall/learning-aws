@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DocumentModel;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SimpleOnlineShop.Database;
 using SimpleOnlineShop.Model;
-using System.Data.SQLite;
-using System.Linq;
+using System;
+using System.Threading.Tasks;
 
 namespace SimpleOnlineShop.Controllers
 {
@@ -12,33 +13,46 @@ namespace SimpleOnlineShop.Controllers
     public class ProductController : ControllerBase
     {
         private readonly ILogger<ProductController> _logger;
+        private readonly IAmazonDynamoDB _db;
 
-        public ProductController(ILogger<ProductController> logger)
+        public ProductController(ILogger<ProductController> logger, IAmazonDynamoDB db)
         {
             _logger = logger;
+            _db = db;
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Product> Get(int id)
+        public async Task<ActionResult<Product>> Get(int id)
         {
-            using var con = new SQLiteConnection(ConnectionString.Value);
+            var productTable = Table.LoadTable(_db, "Products");
+            var item = await productTable.GetItemAsync(id);
 
-            var products = SqliteQueries.GetProducts(con, id);
-            if (!products.Any()) {
+            if (item == null) {
                 return NotFound();
             }
 
-            return products.First();
+            var product = new Product {
+                ProductId = item[nameof(Product.ProductId)].AsInt(),
+                ProductName = item[nameof(Product.ProductName)].AsString(),
+                Quantity = item[nameof(Product.Quantity)].AsInt(),
+                UnitPrice = item[nameof(Product.UnitPrice)].AsDecimal()
+            };
+            return product;
         }
 
         [HttpPost]
-        public ActionResult Create([FromBody] Product productInput)
+        public async Task<ActionResult> Create([FromBody] Product productInput)
         {
-            using var con = new SQLiteConnection(ConnectionString.Value);
+            var productTable = Table.LoadTable(_db, "Products");
+            var item = new Document();
 
-            SqliteQueries.InsertProduct(con, productInput);
+            var id = DateTime.Now.Ticks;
+            item[nameof(Product.ProductId)] = id;
+            item[nameof(Product.ProductName)] = productInput.ProductName;
+            item[nameof(Product.Quantity)] = productInput.Quantity;
+            item[nameof(Product.UnitPrice)] = productInput.UnitPrice;
 
-            return Ok();
+            return Ok(await productTable.PutItemAsync(item));
         }
     }
 }
