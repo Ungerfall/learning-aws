@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimpleOnlineShop.Database;
 using SimpleOnlineShop.Model;
@@ -24,10 +23,7 @@ namespace SimpleOnlineShop.Controllers
         {
             using var con = new SQLiteConnection(ConnectionString.Value);
 
-            var products = con.Query<Product>(
-                    "SELECT ProductId, ProductName, UnitPrice, Quantity FROM Products WHERE ProductId = @Id;", new { Id = id })
-                .ToArray();
-
+            var products = SqliteQueries.GetProducts(con, id);
             if (!products.Any()) {
                 return NotFound();
             }
@@ -39,9 +35,8 @@ namespace SimpleOnlineShop.Controllers
         public ActionResult Create([FromBody] Product productInput)
         {
             using var con = new SQLiteConnection(ConnectionString.Value);
-            con.Query(
-                "INSERT INTO Products(ProductName, UnitPrice, Quantity) VALUES (@ProductName, @UnitPrice, @Quantity);",
-                new { productInput.ProductName, productInput.UnitPrice, productInput.Quantity });
+
+            SqliteQueries.InsertProduct(con, productInput);
 
             return Ok();
         }
