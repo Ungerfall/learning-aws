@@ -22,7 +22,7 @@ namespace SimpleOnlineShop.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> Get(int id)
+        public async Task<ActionResult<Product>> Get(long id)
         {
             var productTable = Table.LoadTable(_db, "Products");
             var item = await productTable.GetItemAsync(id);
@@ -52,7 +52,9 @@ namespace SimpleOnlineShop.Controllers
             item[nameof(Product.Quantity)] = productInput.Quantity;
             item[nameof(Product.UnitPrice)] = productInput.UnitPrice;
 
-            return Ok(await productTable.PutItemAsync(item));
+            await productTable.PutItemAsync(item);
+
+            return Ok(id);
         }
     }
 }
