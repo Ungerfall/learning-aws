@@ -50,3 +50,6 @@ docker start sos
 sudo netstat -pna | grep 2000
 ```
 
+### SQS name
+
+SimpleShoppingCartCheckout
