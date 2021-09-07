@@ -9,7 +9,7 @@ EXPOSE 2000/tcp
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["src/SimpleOnlineShop.csproj", "src/"]
+COPY ["src/SimpleOnlineShop/SimpleOnlineShop.csproj", "src/"]
 RUN dotnet restore "src/SimpleOnlineShop.csproj"
 COPY . .
 WORKDIR "/src/src"
